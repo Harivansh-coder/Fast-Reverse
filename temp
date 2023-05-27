@@ -1,0 +1,35 @@
+#include <iostream>
+#include <cuda.h>
+
+int main() {
+  int *a, *b, *c;
+  size_t size = 1024 * 1024 * 1024;
+
+  // Allocate memory on the GPU.
+  cudaMallocManaged(&a, size);
+  cudaMallocManaged(&b, size);
+  cudaMallocManaged(&c, size);
+
+  // Initialize the data.
+  for (int i = 0; i < size; i++) {
+    a[i] = i;
+    b[i] = i * 2;
+  }
+
+  // Perform the computation on the GPU.
+  cudaMemcpy(c, a, size, cudaMemcpyHostToDevice);
+  cudaMemcpy(c, b, size, cudaMemcpyHostToDevice);
+  cudaDeviceSynchronize();
+
+  // Print the results.
+  for (int i = 0; i < size; i++) {
+    std::cout << c[i] << std::endl;
+  }
+
+  // Free the memory on the GPU.
+  cudaFree(a);
+  cudaFree(b);
+  cudaFree(c);
+
+  return 0;
+}
